@@ -15,10 +15,11 @@ android.permissions = READ_EXTERNAL_STORAGE, WRITE_EXTERNAL_STORAGE, READ_MEDIA_
 android.api = 33
 android.minapi = 26
 android.sdk_path = /usr/local/lib/android/sdk
+android.ndk_path = /usr/local/lib/android/sdk/ndk/27.3.13750724
 android.build_mode = debug
-android.archs = arm64-v8a, armeabi-v7a
+android.archs = arm64-v8a
 android.use_androidx = True
 
 [buildozer]
-log_level = 2
+log_level = 1
 warn_on_root = 1
