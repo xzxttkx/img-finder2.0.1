@@ -47,7 +47,6 @@ jobs:
           sudo unzip -q android-ndk-r28c-linux.zip -d /usr/local/lib/
           echo "ANDROID_NDK_HOME=/usr/local/lib/android-ndk-r28c" >> $GITHUB_ENV
 
-
       - name: Build APK
         run: |
           export PATH="$HOME/.local/bin:$PATH"
@@ -57,7 +56,8 @@ jobs:
           mkdir -p $HOME/.buildozer/android/platform
           ln -sf /usr/local/lib/android/sdk $HOME/.buildozer/android/platform/android-sdk
           ln -sf /usr/local/lib/android-ndk-r28c $HOME/.buildozer/android/platform/android-ndk-r28c
-          buildozer android debug
+          python3 -m buildozer android debug
+
 
 
       - name: Upload APK
