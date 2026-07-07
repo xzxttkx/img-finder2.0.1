@@ -18,34 +18,9 @@ jobs:
           distribution: 'temurin'
           java-version: '17'
 
-      - name: Install Android SDK + NDK
+      - name: Accept SDK licenses
         run: |
-          SDK=/usr/local/lib/android/sdk
-          NDK=/usr/local/lib/android-ndk-r25c
-
-          wget -q https://dl.google.com/android/repository/commandlinetools-linux-11076708_latest.zip
-          sudo mkdir -p $SDK/cmdline-tools
-          sudo unzip -q commandlinetools-linux-11076708_latest.zip -d $SDK/cmdline-tools
-          sudo mv $SDK/cmdline-tools/cmdline-tools $SDK/cmdline-tools/latest 2>/dev/null || true
-
-          sudo mkdir -p $SDK/tools/bin
-          SDKMGR=$SDK/cmdline-tools/latest/bin/sdkmanager
-          sudo ln -sf $SDKMGR $SDK/tools/bin/sdkmanager
-
-          sudo mkdir -p $SDK/licenses
-          echo "24333f8a63b6825ea9c5514f83c2829b004d1fee" | sudo tee $SDK/licenses/android-sdk-license > /dev/null
-
-          yes | sudo $SDKMGR "platform-tools" "build-tools;35.0.0" "platforms;android-33"
-
-          AIDL=$(find $SDK/build-tools -name aidl -type f 2>/dev/null | head -1)
-          [ -n "$AIDL" ] && sudo ln -sf "$AIDL" $SDK/tools/bin/aidl
-
-          wget -q https://dl.google.com/android/repository/android-ndk-r25c-linux.zip
-          sudo unzip -q android-ndk-r25c-linux.zip -d /usr/local/lib/
-
-          echo "ANDROID_SDK_ROOT=$SDK" >> $GITHUB_ENV
-          echo "ANDROID_HOME=$SDK" >> $GITHUB_ENV
-          echo "ANDROID_NDK_HOME=$NDK" >> $GITHUB_ENV
+          yes | /usr/local/lib/android/sdk/cmdline-tools/latest/bin/sdkmanager --licenses > /dev/null 2>&1 || true
 
       - name: Setup Python
         uses: actions/setup-python@v5
@@ -57,10 +32,17 @@ jobs:
 
       - name: Build APK
         run: |
+          export ANDROID_HOME=/usr/local/lib/android/sdk
+          export ANDROID_SDK_ROOT=/usr/local/lib/android/sdk
           mkdir -p $HOME/.buildozer/android/platform
           ln -sf $ANDROID_HOME $HOME/.buildozer/android/platform/android-sdk
-          ln -sf $ANDROID_NDK_HOME $HOME/.buildozer/android/platform/android-ndk-r28c
-          python3 -m buildozer android debug --verbose 2>&1 | tail -200
+          python3 -m buildozer android debug 2>&1 | tee /tmp/full_log.txt
+          echo "EXIT CODE: $?"
+
+      - name: Show p4a error log (if failed)
+        if: failure()
+        run: |
+          find $HOME/.buildozer -name "*.log" -exec echo "=== {} ===" \; -exec tail -100 {} \;
 
       - name: Upload APK
         uses: actions/upload-artifact@v4
