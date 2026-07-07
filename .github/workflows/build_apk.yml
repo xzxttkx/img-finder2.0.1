@@ -23,33 +23,26 @@ jobs:
           SDK=/usr/local/lib/android/sdk
           NDK=/usr/local/lib/android-ndk-r25c
 
-          # Download and install cmdline-tools
           wget -q https://dl.google.com/android/repository/commandlinetools-linux-11076708_latest.zip
           sudo mkdir -p $SDK/cmdline-tools
           sudo unzip -q commandlinetools-linux-11076708_latest.zip -d $SDK/cmdline-tools
           sudo mv $SDK/cmdline-tools/cmdline-tools $SDK/cmdline-tools/latest 2>/dev/null || true
 
-          # Symlink for buildozer compatibility
           sudo mkdir -p $SDK/tools/bin
           SDKMGR=$SDK/cmdline-tools/latest/bin/sdkmanager
           sudo ln -sf $SDKMGR $SDK/tools/bin/sdkmanager
 
-          # Accept license
           sudo mkdir -p $SDK/licenses
           echo "24333f8a63b6825ea9c5514f83c2829b004d1fee" | sudo tee $SDK/licenses/android-sdk-license > /dev/null
 
-          # Install required packages
           yes | sudo $SDKMGR "platform-tools" "build-tools;35.0.0" "platforms;android-33"
 
-          # Symlink aidl
           AIDL=$(find $SDK/build-tools -name aidl -type f 2>/dev/null | head -1)
           [ -n "$AIDL" ] && sudo ln -sf "$AIDL" $SDK/tools/bin/aidl
 
-          # Download NDK 25c
           wget -q https://dl.google.com/android/repository/android-ndk-r25c-linux.zip
           sudo unzip -q android-ndk-r25c-linux.zip -d /usr/local/lib/
 
-          # Environment
           echo "ANDROID_SDK_ROOT=$SDK" >> $GITHUB_ENV
           echo "ANDROID_HOME=$SDK" >> $GITHUB_ENV
           echo "ANDROID_NDK_HOME=$NDK" >> $GITHUB_ENV
@@ -66,7 +59,7 @@ jobs:
         run: |
           mkdir -p $HOME/.buildozer/android/platform
           ln -sf $ANDROID_HOME $HOME/.buildozer/android/platform/android-sdk
-          ln -sf $ANDROID_NDK_HOME $HOME/.buildozer/android/platform/android-ndk-r25c
+          ln -sf $ANDROID_NDK_HOME $HOME/.buildozer/android/platform/android-ndk-r28c
           python3 -m buildozer android debug
 
       - name: Upload APK
