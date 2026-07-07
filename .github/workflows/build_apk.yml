@@ -18,28 +18,26 @@ jobs:
           distribution: 'temurin'
           java-version: '17'
 
-      - name: Install Android SDK
+      - name: Install Android SDK + NDK
         run: |
           ANDROID_SDK_ROOT=/usr/local/lib/android/sdk
           echo "ANDROID_SDK_ROOT=$ANDROID_SDK_ROOT" >> $GITHUB_ENV
           echo "ANDROID_HOME=$ANDROID_SDK_ROOT" >> $GITHUB_ENV
 
-          # Install cmdline-tools
+          # cmdline-tools
           wget -q https://dl.google.com/android/repository/commandlinetools-linux-11076708_latest.zip
           sudo mkdir -p $ANDROID_SDK_ROOT/cmdline-tools
           sudo unzip -q commandlinetools-linux-11076708_latest.zip -d $ANDROID_SDK_ROOT/cmdline-tools
           sudo mv $ANDROID_SDK_ROOT/cmdline-tools/cmdline-tools $ANDROID_SDK_ROOT/cmdline-tools/latest 2>/dev/null || true
-
-          # Fix for buildozer: create tools/bin/sdkmanager
           sudo mkdir -p $ANDROID_SDK_ROOT/tools/bin
           sudo ln -sf $ANDROID_SDK_ROOT/cmdline-tools/latest/bin/sdkmanager $ANDROID_SDK_ROOT/tools/bin/sdkmanager
-
-          # Accept licenses
           sudo mkdir -p $ANDROID_SDK_ROOT/licenses
           echo "24333f8a63b6825ea9c5514f83c2829b004d1fee" | sudo tee $ANDROID_SDK_ROOT/licenses/android-sdk-license > /dev/null
-
-          # Install required packages
           yes | sudo $ANDROID_SDK_ROOT/tools/bin/sdkmanager "platform-tools" "build-tools;37.0.0" "platforms;android-33"
+
+          # NDK 28c
+          wget -q https://dl.google.com/android/repository/android-ndk-r28c-linux.zip
+          sudo unzip -q android-ndk-r28c-linux.zip -d /usr/local/lib/
 
       - name: Setup Python
         uses: actions/setup-python@v5
@@ -54,6 +52,7 @@ jobs:
           export PATH="$HOME/.local/bin:$PATH"
           export ANDROID_HOME=/usr/local/lib/android/sdk
           export ANDROID_SDK_ROOT=/usr/local/lib/android/sdk
+          export ANDROID_NDK_HOME=/usr/local/lib/android-ndk-r28c
           buildozer android debug
 
       - name: Upload APK
