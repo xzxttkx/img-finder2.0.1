@@ -1,0 +1,39 @@
+name: Build Android APK
+
+on:
+  push:
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install system dependencies
+        run: |
+          sudo apt update
+          sudo apt install -y openjdk-17-jdk autoconf libtool cmake pkg-config \
+            libltdl-dev libffi-dev libssl-dev zip unzip
+
+      - name: Install Buildozer
+        run: pip install buildozer cython
+
+      - name: Build APK
+        run: |
+          export PATH="$HOME/.local/bin:$PATH"
+          cd $GITHUB_WORKSPACE
+          buildozer android debug
+
+      - name: Upload APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: DuplicateImageFinder-APK
+          path: bin/*.apk
