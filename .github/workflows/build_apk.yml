@@ -32,18 +32,18 @@ jobs:
 
       - name: Build APK
         run: |
+          sudo apt install -y autoconf libtool m4
           export ANDROID_HOME=/usr/local/lib/android/sdk
           export ANDROID_SDK_ROOT=/usr/local/lib/android/sdk
+          export ANDROID_NDK_HOME=$ANDROID_HOME/ndk/27.3.13750724
           mkdir -p $ANDROID_HOME/tools/bin
-          SDKMANAGER=$(find $ANDROID_HOME/cmdline-tools -name sdkmanager -type f 2>/dev/null | head -1)
-          if [ -z "$SDKMANAGER" ]; then
-            SDKMANAGER=$(find $ANDROID_HOME -name sdkmanager -type f 2>/dev/null | head -1)
-          fi
-          echo "Found sdkmanager: $SDKMANAGER"
-          ln -sf "$SDKMANAGER" $ANDROID_HOME/tools/bin/sdkmanager
+          CMDSDK=$(find $ANDROID_HOME/cmdline-tools -name sdkmanager -type f | head -1)
+          ln -sf "$CMDSDK" $ANDROID_HOME/tools/bin/sdkmanager
           mkdir -p $HOME/.buildozer/android/platform
           ln -sf $ANDROID_HOME $HOME/.buildozer/android/platform/android-sdk
+          ln -sf $ANDROID_NDK_HOME $HOME/.buildozer/android/platform/android-ndk-r28c
           python3 -m buildozer android debug
+
 
 
       - name: Show p4a error log (if failed)
