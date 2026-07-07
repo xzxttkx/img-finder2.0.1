@@ -30,7 +30,9 @@ jobs:
         run: |
           export PATH="$HOME/.local/bin:$PATH"
           cd $GITHUB_WORKSPACE
-          yes | $HOME/.buildozer/android/platform/android-sdk/cmdline-tools/latest/bin/sdkmanager --licenses > /dev/null 2>&1 || true
+          SDKMANAGER="$HOME/.buildozer/android/platform/android-sdk/cmdline-tools/latest/bin/sdkmanager"
+          yes | $SDKMANAGER --licenses > /dev/null 2>&1
+          $SDKMANAGER "platform-tools" "build-tools;37.0.0" "platforms;android-33"
           buildozer android debug
 
       - name: Upload APK
