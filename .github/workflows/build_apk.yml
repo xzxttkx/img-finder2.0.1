@@ -30,9 +30,12 @@ jobs:
         run: |
           export PATH="$HOME/.local/bin:$PATH"
           cd $GITHUB_WORKSPACE
-          mkdir -p "$HOME/.buildozer/android/platform/android-sdk/licenses"
-          echo -e "\n24333f8a63b6825ea9c5514f83c2829b004d1fee" > "$HOME/.buildozer/android/platform/android-sdk/licenses/android-sdk-license"
+          SDK="$HOME/.buildozer/android/platform/android-sdk"
+          mkdir -p "$SDK/licenses"
+          echo "24333f8a63b6825ea9c5514f83c2829b004d1fee" > "$SDK/licenses/android-sdk-license"
+          ln -sf "$SDK/cmdline-tools" "$SDK/tools" 2>/dev/null || true
           buildozer android debug
+
 
 
 
