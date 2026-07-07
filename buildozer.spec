@@ -14,13 +14,11 @@ requirements = python3,kivy,pillow
 android.permissions = READ_EXTERNAL_STORAGE, WRITE_EXTERNAL_STORAGE, READ_MEDIA_IMAGES, MANAGE_EXTERNAL_STORAGE
 android.api = 33
 android.minapi = 26
-android.ndk = 25c
-android.ndk_path = /usr/local/lib/android-ndk-r25c
 android.sdk_path = /usr/local/lib/android/sdk
 android.build_mode = debug
 android.archs = arm64-v8a, armeabi-v7a
 android.use_androidx = True
 
 [buildozer]
-log_level = 1
+log_level = 2
 warn_on_root = 1
