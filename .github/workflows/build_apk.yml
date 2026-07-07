@@ -30,11 +30,10 @@ jobs:
         run: |
           export PATH="$HOME/.local/bin:$PATH"
           cd $GITHUB_WORKSPACE
-          SDK="$HOME/.buildozer/android/platform/android-sdk"
-          mkdir -p "$SDK/licenses"
-          echo "24333f8a63b6825ea9c5514f83c2829b004d1fee" > "$SDK/licenses/android-sdk-license"
-          $SDK/cmdline-tools/*/bin/sdkmanager "platform-tools" "build-tools;37.0.0" "platforms;android-33"
+          mkdir -p "$HOME/.buildozer/android/platform/android-sdk/licenses"
+          echo -e "\n24333f8a63b6825ea9c5514f83c2829b004d1fee" > "$HOME/.buildozer/android/platform/android-sdk/licenses/android-sdk-license"
           buildozer android debug
+
 
 
       - name: Upload APK
