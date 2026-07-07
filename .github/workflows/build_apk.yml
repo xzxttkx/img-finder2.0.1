@@ -34,10 +34,17 @@ jobs:
         run: |
           export ANDROID_HOME=/usr/local/lib/android/sdk
           export ANDROID_SDK_ROOT=/usr/local/lib/android/sdk
+          mkdir -p $ANDROID_HOME/tools/bin
+          SDKMANAGER=$(find $ANDROID_HOME/cmdline-tools -name sdkmanager -type f 2>/dev/null | head -1)
+          if [ -z "$SDKMANAGER" ]; then
+            SDKMANAGER=$(find $ANDROID_HOME -name sdkmanager -type f 2>/dev/null | head -1)
+          fi
+          echo "Found sdkmanager: $SDKMANAGER"
+          ln -sf "$SDKMANAGER" $ANDROID_HOME/tools/bin/sdkmanager
           mkdir -p $HOME/.buildozer/android/platform
           ln -sf $ANDROID_HOME $HOME/.buildozer/android/platform/android-sdk
-          python3 -m buildozer android debug 2>&1 | tee /tmp/full_log.txt
-          echo "EXIT CODE: $?"
+          python3 -m buildozer android debug
+
 
       - name: Show p4a error log (if failed)
         if: failure()
