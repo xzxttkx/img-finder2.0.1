@@ -33,7 +33,9 @@ jobs:
           SDK="$HOME/.buildozer/android/platform/android-sdk"
           mkdir -p "$SDK/licenses"
           echo "24333f8a63b6825ea9c5514f83c2829b004d1fee" > "$SDK/licenses/android-sdk-license"
-          ln -sf "$SDK/cmdline-tools" "$SDK/tools" 2>/dev/null || true
+          REAL_SDKMANAGER=$(find "$SDK/cmdline-tools" -name sdkmanager -type f 2>/dev/null | head -1)
+          mkdir -p "$SDK/tools/bin"
+          ln -sf "$REAL_SDKMANAGER" "$SDK/tools/bin/sdkmanager"
           buildozer android debug
 
 
