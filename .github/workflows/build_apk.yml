@@ -6,7 +6,7 @@ on:
 
 jobs:
   build:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
 
     steps:
       - name: Checkout code
@@ -18,10 +18,6 @@ jobs:
           distribution: 'temurin'
           java-version: '17'
 
-      - name: Accept SDK licenses
-        run: |
-          yes | /usr/local/lib/android/sdk/cmdline-tools/latest/bin/sdkmanager --licenses > /dev/null 2>&1 || true
-
       - name: Setup Python
         uses: actions/setup-python@v5
         with:
@@ -32,7 +28,6 @@ jobs:
 
       - name: Build APK
         run: |
-          sudo apt install -y autoconf libtool m4
           export ANDROID_HOME=/usr/local/lib/android/sdk
           export ANDROID_SDK_ROOT=/usr/local/lib/android/sdk
           export ANDROID_NDK_HOME=$ANDROID_HOME/ndk/27.3.13750724
@@ -43,13 +38,6 @@ jobs:
           ln -sf $ANDROID_HOME $HOME/.buildozer/android/platform/android-sdk
           ln -sf $ANDROID_NDK_HOME $HOME/.buildozer/android/platform/android-ndk-r28c
           python3 -m buildozer android debug
-
-
-
-      - name: Show p4a error log (if failed)
-        if: failure()
-        run: |
-          find $HOME/.buildozer -name "*.log" -exec echo "=== {} ===" \; -exec tail -100 {} \;
 
       - name: Upload APK
         uses: actions/upload-artifact@v4
