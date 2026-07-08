@@ -35,15 +35,29 @@ COLORS = {
 
 
 def _setup_cjk_font():
-    """Register a CJK-compatible font so Chinese text renders on Windows."""
+    """Register a CJK-compatible font so Chinese text renders correctly."""
     import platform as pf
-    if pf.system() == 'Windows':
+    system = pf.system()
+
+    if system == 'Windows':
         windir = os.environ.get('WINDIR', 'C:\\Windows')
         for font_name in ('msyh.ttc', 'msyhbd.ttc', 'simhei.ttf', 'simsun.ttc'):
             fp = os.path.join(windir, 'Fonts', font_name)
             if os.path.exists(fp):
                 LabelBase.register(name='CJK_Default', fn_regular=fp)
                 return True
+
+    # Android: use system CJK font
+    if system == 'Linux':
+        for path in (
+            '/system/fonts/NotoSansCJK.ttc',
+            '/system/fonts/DroidSansFallback.ttf',
+            '/system/fonts/NotoSansSC-Regular.otf',
+        ):
+            if os.path.exists(path):
+                LabelBase.register(name='CJK_Default', fn_regular=path)
+                return True
+
     return False
 
 _FONT_OK = _setup_cjk_font()
